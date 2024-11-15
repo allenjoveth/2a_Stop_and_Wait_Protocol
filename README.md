@@ -1,4 +1,6 @@
 # 2a_Stop_and_Wait_Protocol
+##  NAME : ALLEN JOVETH P
+## REGISTER NUMBER : 212223240007
 ## AIM 
 To write a python program to perform stop and wait protocol
 ## ALGORITHM
@@ -9,49 +11,64 @@ To write a python program to perform stop and wait protocol
 5. If your frames reach the server it will send ACK signal to client
 6. Stop the Program
 ## PROGRAM
-#### NAME:ALLEN JOVETH P
-#### REGISTER NUMBER:212223240007
-### CLIENT
-```
-# importing the socket
-import socket 
-s=socket.socket() 
-s.bind(('localhost',8000))
-s.listen(5) 
-c,addr=s.accept()
-# using while loop for the execution
+### server:
+```python
+import socket
+
+server = socket.socket()
+server.bind(('localhost', 8000))
+server.listen(1)
+print("Server is listening...")
+conn, addr = server.accept()
+print(f"Connected with {addr}")
+
 while True:
-# taking the input from the user
-    i=input("Enter a data: ") 
-    c.send(i.encode()) 
-    ack=c.recv(1024).decode() 
-    if ack:
-# if the condition is true, it is printed and continued
-        print(ack) 
-        continue 
-    else:
-# if the condition is false, it is closed and break
-        c.close() 
-        break 
+    data = conn.recv(1024).decode()
+
+    if data:
+        print(f"Received: {data}")
+        conn.send("ACK".encode())
+
+        if data.lower() == 'exit':  
+            print("Connection closed by client")
+            conn.close()
+            break
+
 ```
-### SERVER
-```
-# importing the socket
-import socket 
-s=socket.socket() 
-s.connect(('localhost',8000))
-# using while loop for the execution
-while True: 
-    print(s.recv(1024).decode()) 
-    s.send("Acknowledgement Recived".encode()) 
+
+### client:
+```python
+
+import socket
+import time
+
+client = socket.socket()
+client.connect(('localhost', 8000))
+client.settimeout(5)  
+
+while True:
+    msg = input("Enter a message (or type 'exit' to quit): ")
+
+    client.send(msg.encode())  
+
+    if msg.lower() == 'exit':  
+        print("Connection closed by client")
+        client.close()
+        break
+
+    try:
+        ack = client.recv(1024).decode()
+        if ack == "ACK":
+            print(f"Server acknowledged: {ack}")
+    except socket.timeout:
+        print("No ACK received, retransmitting...")
+        continue  
+
 ```
 ## OUTPUT
-
-### CLIENT 
-![image](https://github.com/user-attachments/assets/300d231a-89b2-4d37-a342-1375611c1bb7)
-
-### SERVER
-![image](https://github.com/user-attachments/assets/4ec40f45-f797-4415-8d5b-456ac4783158)
-
+### client:
+![alt text](image.png)
+### server:
+![alt text](image-1.png)
 ## RESULT
 Thus, python program to perform stop and wait protocol was successfully executed.
